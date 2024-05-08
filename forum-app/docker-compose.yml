@@ -1,0 +1,41 @@
+version: '3.6'
+
+services:
+  flaskweb:
+    image: flask_app_v1:1.0
+    build:
+        context: .
+    container_name: flask_v1_app_demo
+    ports:
+      - 5005:5000
+    depends_on:
+      - db
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=flask_intern_db
+      - DB_HOST=db
+      - DB_PORT=5432
+    volumes:
+      - .:/app
+    working_dir: /app
+    # command: ["python", "app.py"]
+  db:
+    image: postgres:14-alpine
+    container_name: flask_db_service
+    ports:
+      - 5452:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=flask_intern_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    restart: always
+    command: [
+      "postgres",
+      "-c", "max_connections=100",
+     ]
+volumes:
+  db_data:
